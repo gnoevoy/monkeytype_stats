@@ -1,5 +1,12 @@
-import pendulum
 from airflow.sdk import dag, task
+from pathlib import Path
+import pendulum
+import sys
+
+root_dir = Path(__file__).parent.parent
+sys.path.append(str(root_dir))
+
+from pipeline.extract_data import extract_data
 
 
 @dag(
@@ -11,11 +18,10 @@ from airflow.sdk import dag, task
 def monkeytype_pipeline():
 
     @task()
-    def counter():
-        for i in range(5):
-            print(f"Counter: {i}")
+    def extract_data_task():
+        return extract_data()
 
-    first_task = counter()
+    extract_data_task()
 
 
 monkeytype_pipeline()
