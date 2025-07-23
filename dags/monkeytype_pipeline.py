@@ -7,6 +7,7 @@ root_dir = Path(__file__).parent.parent
 sys.path.append(str(root_dir))
 
 from pipeline.extract_data import extract_data
+from pipeline.transform_data import transform_activity_data
 
 
 @dag(
@@ -21,7 +22,12 @@ def monkeytype_pipeline():
     def extract_data_task():
         return extract_data()
 
+    @task()
+    def transform_activity_data_task():
+        transform_activity_data()
+
     extract_data_task()
+    transform_activity_data_task()
 
 
 monkeytype_pipeline()
