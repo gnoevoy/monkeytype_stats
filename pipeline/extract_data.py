@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 def extract_data():
-
     # Get env variables
     api_key = Variable.get("MONKEYTYPE_API_KEY")
     base_url = Variable.get("BASE_URL")
@@ -28,6 +27,6 @@ def extract_data():
         # Upload to GCS
         blob_name = f"raw/{key}.json"
         hook = GCSHook(gcp_conn_id="google_cloud")
-        hook.upload(bucket_name=bucket_name, object_name=blob_name, data=json_data)
+        hook.upload(bucket_name=bucket_name, object_name=blob_name, data=json_data, mime_type="application/json")
 
         logger.info(f"Data from {endpoint} successfully extracted and uploaded to GCS bucket as {blob_name}")

@@ -7,27 +7,39 @@ root_dir = Path(__file__).parent.parent
 sys.path.append(str(root_dir))
 
 from pipeline.extract_data import extract_data
-from pipeline.transform_data import transform_activity_data
+from pipeline.transform_data import transform_activity_data, transform_profile_data, transform_results_data
 
 
 @dag(
     schedule=None,
-    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+    start_date=pendulum.datetime(2025, 1, 1, tz="UTC"),
     catchup=False,
-    tags=["example"],
+    # tags=["example"],
 )
 def monkeytype_pipeline():
 
     @task()
-    def extract_data_task():
-        return extract_data()
+    def _extract_data():
+        extract_data()
 
     @task()
-    def transform_activity_data_task():
-        transform_activity_data()
+    def _transform_activity_data():
+        return transform_activity_data()
 
-    extract_data_task()
-    transform_activity_data_task()
+    @task()
+    def _transform_profile_data():
+        return transform_profile_data()
+
+    @task()
+    def _transform_results_data():
+        return transform_results_data()
+
+    t1 = _extract_data()
+    t2 = _transform_activity_data()
+    t3 = _transform_profile_data()
+    t4 = _transform_results_data()
+
+    t1 >> [t2, t3, t4]
 
 
 monkeytype_pipeline()
