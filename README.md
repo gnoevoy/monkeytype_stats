@@ -6,3 +6,5 @@ Data transformations
 what tool should I use? Pandas ?
 
 https://stackoverflow.com/questions/74217754/how-to-load-multiple-files-from-gcs-to-bigquery-using-airflow
+
+BIGQUERY_DATASET
