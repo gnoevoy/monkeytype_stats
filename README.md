@@ -1,10 +1,7 @@
-Data transformations
-3. tests: convert datetime 
+current result: extract - transform - load  -->> work fine
 
--->> load all to clean folder as csv files
+1. Error handling, logs, comments  -->> test everything
+2. Run results tasks if there's an update (file were modified by data / id ???)
 
-what tool should I use? Pandas ?
+-->> move on to dbt 
 
-https://stackoverflow.com/questions/74217754/how-to-load-multiple-files-from-gcs-to-bigquery-using-airflow
-
-BIGQUERY_DATASET

@@ -8,7 +8,7 @@ import json
 logger = logging.getLogger(__name__)
 
 
-def extract_data():
+def _extract_data():
     # Get env variables
     api_key = Variable.get("MONKEYTYPE_API_KEY")
     base_url = Variable.get("BASE_URL")

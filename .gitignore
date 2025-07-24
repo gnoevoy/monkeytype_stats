@@ -2,8 +2,10 @@
 logs/
 venv
 
+# Python
 __pycache__/
-
 example.py
 
-gcloud_key.json
+# Credentials
+*.json
+.env

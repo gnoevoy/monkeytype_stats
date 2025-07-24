@@ -1,6 +1,6 @@
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
 from airflow.sdk import Variable
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from io import BytesIO
 import pandas as pd
 import logging
@@ -10,16 +10,19 @@ import json
 logger = logging.getLogger(__name__)
 
 
+# 2 helper functions to read / write data to GCS
+
+
 def read_from_bucket(blob_name, file_type="json"):
     bucket_name = Variable.get("BUCKET_NAME")
     hook = GCSHook(gcp_conn_id="google_cloud")
     data = hook.download(bucket_name=bucket_name, object_name=blob_name)
 
+    # Handle CSV and JSON files differently
     if file_type == "csv":
         csv_buffer = BytesIO(data)
         logger.info(f"File {blob_name} - successfully retrieved from GCS bucket")
         return pd.read_csv(csv_buffer)
-
     else:
         json_data = json.loads(data)
         logger.info(f"File {blob_name} - successfully retrieved from GCS bucket")
@@ -33,29 +36,25 @@ def write_to_bucket(data, blob_name):
     logger.info(f"File {blob_name} - successfully uploaded to GCS bucket")
 
 
-def transform_activity_data():
+# 3 functions to transform raw data
+
+
+def _transform_activity_data():
     # Get json data from GCS
     json_data = read_from_bucket("raw/activity.json")
     data = json_data["data"]
     values, num = data["testsByDays"], data["lastDay"]
 
-    # Convert number to UTC date
-    date = datetime.fromtimestamp(num / 1000, tz=timezone.utc).date()
-    dates_lst = [date]
+    # Convert timestamp from number -> assing for each day the number of tests
+    last_date = pd.to_datetime(num, unit="ms", utc=True).normalize()
+    dates = pd.date_range(end=last_date, periods=len(values), freq="D")
+    df = pd.DataFrame({"date": dates, "tests": values})
 
-    # Generate dates -> assing for each day the number of tests
-    for i in range(len(values) - 1):
-        value = dates_lst[-1]
-        previous_day = value - timedelta(days=1)
-        dates_lst.append(previous_day)
-    dataset = zip(dates_lst[::-1], values)
-
-    # Create DataFrame
-    df = pd.DataFrame(dataset, columns=["date", "tests"])
+    # Format columns
     df["tests"] = df["tests"].fillna(0).astype(int)
     df["date"] = pd.to_datetime(df["date"]).dt.date
 
-    # Filter table
+    # Filter table by date
     filter_date = datetime(2025, 1, 10).date()
     df = df[df["date"] > filter_date]
 
@@ -63,12 +62,11 @@ def transform_activity_data():
     write_to_bucket(df.to_csv(index=False), "clean/activity.csv")
 
 
-def transform_profile_data():
-    # Get json data from GCS
+def _transform_profile_data():
     json_data = read_from_bucket("raw/profile.json")
     data = json_data["data"]
 
-    # Function to get general stats
+    # Create a table with general stats
     def get_general_stats(data):
         typing_stats = data["typingStats"]
         dct = {
@@ -81,7 +79,7 @@ def transform_profile_data():
         df = pd.DataFrame([dct]).astype(int)
         return df
 
-    # Function to get best results
+    # Create a table with best results
     def get_best_results(data):
         best_results = data["personalBests"]
         lst = []
@@ -93,7 +91,7 @@ def transform_profile_data():
                     row = {"mode": mode, "category": category, **entry}
                     lst.append(row)
 
-        # Create DataFrame + formatting / cleaning
+        # Create DataFrame + make formatting and filtering
         df = pd.DataFrame(lst)
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True).dt.floor("s")
         df = df[df["language"].str.contains(r"english.*", case=False)]
@@ -101,16 +99,18 @@ def transform_profile_data():
 
         return df
 
-    # Create 2 tables and load them to GCS
+    # Load tables to GCS
     stats = get_general_stats(data)
     best_resulst = get_best_results(data)
-    logger.info(f"General stats ({len(stats)} rows) + Best results ({len(best_resulst)} rows) tables are successfully created")
+
+    logger.info(f"General stats table - successfully created, {len(stats)} rows")
+    logger.info(f"Best results table - successfully created, {len(best_resulst)} rows")
     write_to_bucket(stats.to_csv(index=False), "clean/stats.csv")
     write_to_bucket(best_resulst.to_csv(index=False), "clean/best_results.csv")
 
 
-def transform_results_data():
-    # Read data from GCS
+def _transform_results_data():
+    # Read csv file from GCS
     df = read_from_bucket("raw/results.csv", file_type="csv")
 
     # Convert timestamp to datetime and filter by language
@@ -136,5 +136,5 @@ def transform_results_data():
     cols_to_drop = ["charStats", "quoteLength", "funbox", "difficulty", "lazyMode", "blindMode", "bailedOut", "tags"]
     df.drop(columns=cols_to_drop, inplace=True)
 
-    logger.info(f"Results table - successfully created, {len(df)} rows")
+    logger.info(f"General stats table - successfully created, {len(df)} rows")
     write_to_bucket(df.to_csv(index=False), "clean/results.csv")
