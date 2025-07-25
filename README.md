@@ -1,7 +1,7 @@
-current result: extract - transform - load  -->> work fine
-
-1. Error handling, logs, comments  -->> test everything
-2. Run results tasks if there's an update (file were modified by data / id ???)
+Create proper structure and logs
 
 -->> move on to dbt 
+
+2025-07-24 02:02:52.902000+00:00
+
 

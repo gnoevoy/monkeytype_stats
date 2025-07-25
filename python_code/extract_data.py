@@ -1,5 +1,5 @@
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from airflow.sdk import Variable
+from airflow.sdk import task, Variable
 import requests
 import logging
 import json
