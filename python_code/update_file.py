@@ -27,9 +27,14 @@ def check_file_update():
     return {"is_file_updated": result, "file_timestamp": file_timestamp}
 
 
-@task.short_circuit
+# Conditional task to check if the file was updated
+@task.branch
 def is_file_updated(dct):
-    return dct["is_file_updated"]
+    flag = dct["is_file_updated"]
+    if flag:
+        return ["transform_results_data"]
+    else:
+        return []
 
 
 @task

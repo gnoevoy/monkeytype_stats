@@ -12,8 +12,7 @@ from python_code.extract_data import extract_data
 from python_code.transform_data import transform_activity_data, transform_profile_data, transform_results_data
 from python_code.load_data import load_data
 from python_code.update_file import check_file_update, is_file_updated, update_env_variable
-
-# from python_code.example import hello_world
+from python_code.example import hello
 
 
 @dag(schedule=None, start_date=pendulum.datetime(2025, 1, 1, tz="UTC"), catchup=False)
@@ -35,11 +34,14 @@ def monkeytype_pipeline():
         # Dependecies inside the group
         t_extract_data >> [t_transform_activity_data, t_transform_profile_data]
         t_transform_activity_data >> t_load_activity_data
-        t_transform_profile_data >> [t_load_stats_data, t_load_best_results_data]
+        t_transform_profile_data >> [t_load_best_results_data, t_load_stats_data]
+
+        # Return the last tasks in the group
+        return [t_load_activity_data, t_load_best_results_data, t_load_stats_data]
 
     @task_group(group_id="file_group")
     def file_group():
-        # Run scripts if file was updated otherwise skip tasks
+        # Run scripts if a file was updated otherwise skip tasks
         t_check_file_update = check_file_update()
         t_is_file_updated = is_file_updated(t_check_file_update)
         t_transform_results_data = transform_results_data()
@@ -48,15 +50,11 @@ def monkeytype_pipeline():
 
         t_check_file_update >> t_is_file_updated >> t_transform_results_data >> t_load_results_data >> t_update_env_variable
 
-    @task(trigger_rule="none_failed")
-    def hello_world():
-        print()
-
+    # Define dependencies between groups
+    t_hello = hello()
     g_api_group = api_group()
     g_file_group = file_group()
-    t_hello_world = hello_world()
-
-    [g_api_group, g_file_group] >> t_hello_world
+    [*g_api_group, g_file_group] >> t_hello
 
 
 monkeytype_pipeline()
