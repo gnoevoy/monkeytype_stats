@@ -1,9 +1,9 @@
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 
 
-def _load_data(task_id, source_object, table):
+def load_data(task_id, source_object, table):
     # Import env variables
-    # Somehow Variable.get() does not work in "airflow tasks test" command
+    # Variable.get() doesnt work while testing operators
     bucket_name = "{{var.value.BUCKET_NAME}}"
     project_id = "{{var.value.GOOGLE_CLOUD_PROJECT_ID}}"
     dataset = "{{var.value.BIGQUERY_DATASET}}"

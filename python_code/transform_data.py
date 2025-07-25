@@ -1,5 +1,5 @@
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from airflow.sdk import Variable
+from airflow.sdk import task, Variable
 from datetime import datetime
 from io import BytesIO
 import pandas as pd
@@ -36,10 +36,11 @@ def write_to_bucket(data, blob_name):
     logger.info(f"File {blob_name} - successfully uploaded to GCS bucket")
 
 
-# 3 functions to transform raw data
+# 3 tasks to transform raw data
 
 
-def _transform_activity_data():
+@task
+def transform_activity_data():
     # Get json data from GCS
     json_data = read_from_bucket("raw/activity.json")
     data = json_data["data"]
@@ -62,7 +63,8 @@ def _transform_activity_data():
     write_to_bucket(df.to_csv(index=False), "clean/activity.csv")
 
 
-def _transform_profile_data():
+@task
+def transform_profile_data():
     json_data = read_from_bucket("raw/profile.json")
     data = json_data["data"]
 
@@ -91,7 +93,7 @@ def _transform_profile_data():
                     row = {"mode": mode, "category": category, **entry}
                     lst.append(row)
 
-        # Create DataFrame + make formatting and filtering
+        # Create DataFrame -> formatting + filtering
         df = pd.DataFrame(lst)
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True).dt.floor("s")
         df = df[df["language"].str.contains(r"english.*", case=False)]
@@ -109,7 +111,8 @@ def _transform_profile_data():
     write_to_bucket(best_resulst.to_csv(index=False), "clean/best_results.csv")
 
 
-def _transform_results_data():
+@task
+def transform_results_data():
     # Read csv file from GCS
     df = read_from_bucket("raw/results.csv", file_type="csv")
 

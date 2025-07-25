@@ -1,5 +1,5 @@
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from airflow.sdk import Variable
+from airflow.sdk import task, Variable
 from datetime import datetime
 import logging
 
@@ -7,13 +7,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def _check_file_update():
+@task
+def check_file_update():
     # Get file timestamp from GCS
     bucket_name = Variable.get("BUCKET_NAME")
     hook = GCSHook(gcp_conn_id="google_cloud")
     file_timestamp = hook.get_blob_update_time(bucket_name, "raw/results.csv")
 
-    # Get var value converted to datetime
+    # Get env variable value -> convert to timestamp
     var_value = Variable.get("RESULTS_FILE_LAST_UPDATE")
     var_timestamp = datetime.fromisoformat(var_value)
 
@@ -26,8 +27,15 @@ def _check_file_update():
     return {"is_file_updated": result, "file_timestamp": file_timestamp}
 
 
-def _update_env_variable(file_timestamp):
-    old_value = Variable.get("RESULTS_FILE_LAST_UPDATE")
-    logger.info(f"Old value: {old_value}, New value: {file_timestamp}")
-    str_value = file_timestamp.isoformat()
-    Variable.set("RESULTS_FILE_LAST_UPDATE", str_value)
+@task.short_circuit
+def is_file_updated(dct):
+    return dct["is_file_updated"]
+
+
+@task
+def update_env_variable(timestamp):
+    current_env_var_value = Variable.get("RESULTS_FILE_LAST_UPDATE")
+    new_value = timestamp.isoformat()
+    logger.info(f"Old value: {current_env_var_value}")
+    logger.info(f"New value: {new_value}")
+    Variable.set("RESULTS_FILE_LAST_UPDATE", new_value)
