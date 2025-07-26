@@ -39,7 +39,7 @@ def monkeytype_pipeline():
         # Return the last tasks in the group
         return [t_load_activity_data, t_load_best_results_data, t_load_stats_data]
 
-    @task_group(group_id="file_group")
+    @task_group(group_id="file_group", prefix_group_id=False)
     def file_group():
         # Run scripts if a file was updated otherwise skip tasks
         t_check_file_update = check_file_update()
