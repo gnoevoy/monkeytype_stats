@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: monkeytype 
+    database: global-grammar-449122-b6
+    schema: monkeytype_stats
+    tables:
+      - name: activity
+      - name: best_results
+      - name: results
+      - name: stats
+      

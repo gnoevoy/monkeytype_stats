@@ -21,8 +21,9 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    # Mount directory for python scripts
+    # Mount directory for python and dbt code
     - ${AIRFLOW_PROJ_DIR:-.}/python_code:/opt/airflow/python_code
+    - ${AIRFLOW_PROJ_DIR:-.}/dbt_code:/opt/airflow/dbt_code
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on
     redis:

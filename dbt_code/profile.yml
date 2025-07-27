@@ -1,0 +1,11 @@
+monkeytype:
+  outputs:
+    local:
+      method: oauth
+      dataset: monkeytype_stats
+      priority: interactive
+      project: global-grammar-449122-b6
+      threads: 64
+      type: bigquery
+
+  target: local

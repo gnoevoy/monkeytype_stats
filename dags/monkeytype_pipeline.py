@@ -1,12 +1,12 @@
 from airflow.decorators import task_group
 from airflow.sdk import dag, task
-from pathlib import Path
 import pendulum
 import sys
+import os
 
 # Add path to import scripts
-root_dir = Path(__file__).parent.parent
-sys.path.append(str(root_dir))
+HOME_DIR = os.getenv("AIRFLOW_HOME")
+sys.path.append(HOME_DIR)
 
 from python_code.extract_data import extract_data
 from python_code.transform_data import transform_activity_data, transform_profile_data, transform_results_data
