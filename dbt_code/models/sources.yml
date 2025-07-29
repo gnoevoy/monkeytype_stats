@@ -1,5 +1,7 @@
 version: 2
 
+# Import source data for reference in models 
+
 sources:
   - name: monkeytype 
     database: global-grammar-449122-b6

@@ -1,6 +1,10 @@
+-- Table that tracks number of tests for each day
+-- Added streaks count to track consecutive days of testing
+
 with source as (
     select 
         date,
+        -- Extracting date components
         EXTRACT(YEAR FROM date) AS year,
         EXTRACT(MONTH FROM date) AS month,
         EXTRACT(QUARTER FROM date) AS quarter,

@@ -136,7 +136,7 @@ def transform_results_data():
     df["incompleteTestSeconds"] = df["incompleteTestSeconds"].apply(rounding_fun).astype(int)
 
     # Drop unnecessary columns
-    cols_to_drop = ["charStats", "quoteLength", "funbox", "difficulty", "lazyMode", "blindMode", "bailedOut", "tags"]
+    cols_to_drop = ["charStats", "quoteLength", "funbox", "difficulty", "lazyMode", "blindMode", "tags"]
     df.drop(columns=cols_to_drop, inplace=True)
 
     logger.info(f"General stats table - successfully created, {len(df)} rows")

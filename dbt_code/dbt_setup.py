@@ -1,6 +1,6 @@
 from cosmos import DbtTaskGroup, ExecutionConfig, ProfileConfig, ProjectConfig
 from cosmos.profiles import GoogleCloudServiceAccountDictProfileMapping
-from airflow.sdk import Variable
+from airflow.sdk import Variable, task
 import os
 
 
@@ -35,14 +35,19 @@ profile_config = ProfileConfig(
 execution_config = ExecutionConfig(dbt_executable_path=DBT_EXECUTABLE_PATH)
 
 
-def dbt_tasks(group_id):
+@task(trigger_rule="none_failed")
+def empty_task():
+    pass
+
+
+def dbt_group(group_id):
     return DbtTaskGroup(
         group_id=group_id,
         project_config=project_config,
         profile_config=profile_config,
         execution_config=execution_config,
+        default_args={"retries": 0},
         # operator_args={
         #     "vars": '{"my_name": {{ params.my_name }} }',
         # },
-        # default_args={"retries": 2},
     )
