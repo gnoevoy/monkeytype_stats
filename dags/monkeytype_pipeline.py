@@ -1,5 +1,5 @@
 from airflow.decorators import task_group
-from airflow.sdk import dag, task
+from airflow.sdk import dag
 import pendulum
 import sys
 import os

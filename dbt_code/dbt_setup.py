@@ -1,4 +1,4 @@
-from cosmos import DbtTaskGroup, ExecutionConfig, ProfileConfig, ProjectConfig
+from cosmos import DbtTaskGroup, ExecutionConfig, ProfileConfig, ProjectConfig, RenderConfig, LoadMode
 from cosmos.profiles import GoogleCloudServiceAccountDictProfileMapping
 from airflow.sdk import Variable, task
 import os
@@ -8,16 +8,6 @@ import os
 HOME_DIR = os.getenv("AIRFLOW_HOME")
 DBT_PROJECT_PATH = f"{HOME_DIR}/dbt_code"
 DBT_EXECUTABLE_PATH = f"{HOME_DIR}/dbt_venv/bin/dbt"
-
-project_config = ProjectConfig(
-    dbt_project_path=DBT_PROJECT_PATH,
-    # env_vars={"MY_ENV_VAR": "my_env_value"},
-    # dbt_vars={
-    #     "my_dbt_var": "my_value",
-    #     "start_time": "{{ data_interval_start.strftime('%Y%m%d%H%M%S') }}",
-    #     "end_time": "{{ data_interval_end.strftime('%Y%m%d%H%M%S') }}",
-    # },
-)
 
 profile_config = ProfileConfig(
     profile_name="monkeytype",
@@ -32,12 +22,13 @@ profile_config = ProfileConfig(
     ),
 )
 
+project_config = ProjectConfig(
+    dbt_project_path=DBT_PROJECT_PATH,
+    env_vars={"GOOGLE_CLOUD_PROJECT_ID": Variable.get("GOOGLE_CLOUD_PROJECT_ID")},
+)
+
 execution_config = ExecutionConfig(dbt_executable_path=DBT_EXECUTABLE_PATH)
-
-
-@task(trigger_rule="none_failed")
-def empty_task():
-    pass
+render_config = RenderConfig(load_method=LoadMode.DBT_LS, dbt_deps=False)
 
 
 def dbt_group(group_id):
@@ -46,8 +37,12 @@ def dbt_group(group_id):
         project_config=project_config,
         profile_config=profile_config,
         execution_config=execution_config,
+        render_config=render_config,
         default_args={"retries": 0},
-        # operator_args={
-        #     "vars": '{"my_name": {{ params.my_name }} }',
-        # },
+        operator_args={"install_deps": False},
     )
+
+
+@task(trigger_rule="none_failed")
+def empty_task():
+    pass

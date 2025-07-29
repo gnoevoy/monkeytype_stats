@@ -1,11 +1,8 @@
 -- Main model in a dataset thats shows tests results
--- Added bool column for best results so far
-
--- For "time" and "words" mode just get the highest WPM from source table "best_results"
--- For "custom" mode, categorize results by text size and get the highest WPM 
 
 with base as (
     select *,
+        -- Create bins for text size (used to determine best custom results)
         case when total_chars <= 500 then "small"
             when total_chars <= 1500 then "medium"
             when total_chars <= 4000 then "large"
@@ -24,9 +21,11 @@ best_custom_results as (
 )
 
 select t1.*,
+    -- Bool column to indicate best results so far
     case when t2.wpm is not null or t3.best_custom_wpm is not null then 1 else 0 end as is_best_result,
 from base as t1
 
+-- Join best results for each mode
 left join {{ source('monkeytype', 'best_results') }} as t2
     on t1.mode = t2.mode and t1.mode2 = CAST(t2.category AS STRING)
         and t1.punctuation = t2.punctuation and t1.numbers = t2.numbers

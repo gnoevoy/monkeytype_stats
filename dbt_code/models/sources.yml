@@ -1,10 +1,10 @@
 version: 2
 
-# Import source data for reference in models 
+# Import source tables for reference in models 
 
 sources:
   - name: monkeytype 
-    database: global-grammar-449122-b6
+    database: "{{ env_var('GOOGLE_CLOUD_PROJECT_ID') }}"
     schema: monkeytype_stats
     tables:
       - name: activity

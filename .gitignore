@@ -1,11 +1,14 @@
-# Airflow
-logs/
-venv
-
 # Python
 __pycache__/
 example.py
+venv/
 
-# Credentials
+# dbt
+dbt_code/target/
+dbt_code/logs/
+
+# Airflow
+logs/
+
+# Env variables & secrets
 *.json
-.env

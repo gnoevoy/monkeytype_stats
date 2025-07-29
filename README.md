@@ -1,15 +1,18 @@
-
-DBT:
-
->> airflow transition
-
-https://github.com/astronomer/astronomer-cosmos/pull/1014
+- Understand cosmos dbt logic, hot it works
+- dbt ls vs manifest json (try to use both, compare)
 
 
-Configuration	New Value
-dagbag_import_timeout	5000
-Parallelism	32
-max_active_task_per_dag	16
+
+
+
+
+
+
+
+
+
+
+
 
 
 -------------------------
