@@ -1,6 +1,11 @@
-- Understand cosmos dbt logic, hot it works
-- dbt ls vs manifest json (try to use both, compare)
+run on airlfow on vm
 
+challenges:
+- learn a bit about vm 
+- code changes -> update code in vm
+- secrests, variables and connections
+
+automated pipeline
 
 
 

@@ -4,7 +4,7 @@ import pendulum
 import sys
 import os
 
-# Add path to import scripts
+# Add path to import scripts / tasks
 HOME_DIR = os.getenv("AIRFLOW_HOME")
 sys.path.append(HOME_DIR)
 
@@ -57,6 +57,7 @@ def monkeytype_pipeline():
         g_api_group = api_group()
         g_file_group = file_group()
 
+    # Chain the task groups together
     g_python = python_group()
     g_dbt = dbt_group(group_id="dbt_group")
     t_empty_task = empty_task()
