@@ -1,21 +1,17 @@
 from airflow.decorators import task_group
 from airflow.sdk import dag, task
-from pathlib import Path
 import pendulum
 import sys
 import os
 
 # Add path to import scripts / tasks
-ROOT_DIR = Path(os.getenv("AIRFLOW_HOME"))
-DAG_DIR = ROOT_DIR / "dags" / "monkeytype_stats"
-sys.path.append(str(DAG_DIR))
+HOME_DIR = os.getenv("AIRFLOW_HOME")
+sys.path.append(f"{HOME_DIR}/dags")
 
-from python.load_data import load_data
 from python.extract_data import extract_data
 from python.transform_data import transform_activity_data, transform_profile_data, transform_results_data
 from python.update_file import check_file_update, is_file_updated, update_env_variable
-
-# from dbt.dbt_setup import dbt_group, empty_task
+from python.load_data import load_data
 
 
 @dag(schedule=None, start_date=pendulum.datetime(2025, 1, 1, tz="UTC"), catchup=False)
@@ -60,18 +56,13 @@ def monkeytype_pipeline():
         g_api_group = api_group()
         g_file_group = file_group()
 
-    # Chain the task groups together
-    g_python = python_group()
-
     @task(trigger_rule="none_failed")
     def empty_task():
-        print("hello")
+        print("")
 
+    # Chain the task groups together
+    g_python = python_group()
     g_python >> empty_task()
-
-    # g_dbt = dbt_group(group_id="dbt_group")
-    # t_empty_task = empty_task()
-    # g_python >> t_empty_task >> g_dbt
 
 
 monkeytype_pipeline()

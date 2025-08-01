@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 @task
 def check_file_update():
     # Get file timestamp from GCS
-    bucket_name = os.getenv("GCS_BUCKET_NAME")
+    bucket_name = os.getenv("BUCKET_NAME")
     hook = GCSHook(gcp_conn_id="google_cloud")
     file_timestamp = hook.get_blob_update_time(bucket_name, "raw/results.csv")
 
