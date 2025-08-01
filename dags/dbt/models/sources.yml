@@ -1,0 +1,13 @@
+version: 2
+
+# Import source tables for reference in models 
+
+sources:
+  - name: monkeytype 
+    database: "{{ env_var('GOOGLE_CLOUD_PROJECT_ID') }}"
+    schema: "{{ env_var('BIGQUERY_DATASET') }}"
+    tables:
+      - name: activity
+      - name: best_results
+      - name: results
+      - name: stats

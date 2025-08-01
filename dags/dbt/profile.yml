@@ -1,0 +1,12 @@
+monkeytype:
+  outputs:
+    local:
+      method: oauth
+      dataset: "{{ env_var('BIGQUERY_DATASET') }}"
+      priority: interactive
+      project: "{{ env_var('GOOGLE_CLOUD_PROJECT_ID') }}"
+      threads: 64
+      type: bigquery
+      location: EU
+
+  target: local

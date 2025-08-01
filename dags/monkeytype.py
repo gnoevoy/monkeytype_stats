@@ -12,6 +12,7 @@ from python.extract_data import extract_data
 from python.transform_data import transform_activity_data, transform_profile_data, transform_results_data
 from python.update_file import check_file_update, is_file_updated, update_env_variable
 from python.load_data import load_data
+from dbt.dbt_script import dbt_group
 
 
 @dag(schedule=None, start_date=pendulum.datetime(2025, 1, 1, tz="UTC"), catchup=False)
@@ -60,9 +61,12 @@ def monkeytype_pipeline():
     def empty_task():
         print("")
 
-    # Chain the task groups together
     g_python = python_group()
-    g_python >> empty_task()
+    t_empty_task = empty_task()
+    g_dbt = dbt_group(group_id="dbt_group")
+
+    # Chain the task groups together
+    g_python >> t_empty_task >> g_dbt
 
 
 monkeytype_pipeline()
