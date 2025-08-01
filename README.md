@@ -1,60 +1,45 @@
-run on airlfow on vm
+Overview
+========
 
-challenges:
-- learn a bit about vm 
-- code changes -> update code in vm
-- secrests, variables and connections
+Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
 
-automated pipeline
+Project Contents
+================
 
+Your Astro project contains the following files and folders:
 
+- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
+    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
+- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
+- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
+- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
+- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
+- plugins: Add custom or community plugins for your project to this file. It is empty by default.
+- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
 
+Deploy Your Project Locally
+===========================
 
+Start Airflow on your local machine by running 'astro dev start'.
 
+This command will spin up five Docker containers on your machine, each for a different Airflow component:
 
+- Postgres: Airflow's Metadata Database
+- Scheduler: The Airflow component responsible for monitoring and triggering tasks
+- DAG Processor: The Airflow component responsible for parsing DAGs
+- API Server: The Airflow component responsible for serving the Airflow UI and API
+- Triggerer: The Airflow component responsible for triggering deferred tasks
 
+When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
 
+Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
 
+Deploy Your Project to Astronomer
+=================================
 
+If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
 
+Contact
+=======
 
-
-
--------------------------
-
-Attribute	Description
-_id	Unique identifier for the entire test.
-isPb	Indicates if the session resulted in a personal best (true/false).
-wpm	Total number of characters in the correctly typed words (including spaces), divided by 5 and normalized to 60 seconds.
-acc	Percentage of correctly pressed keys.
-rawWpm	Calculated just like wpm, but also includes incorrect words.
-consistency	Based on the variance of your raw WPM. Closer to 100% is better. Calculated using the coefficient of variation of raw WPM and mapped onto a scale from 0 to 100.
-charStats	Number of correct, incorrect, extra, and missed characters (separated by semicolon).
-mode	Typing mode used (time, words, quote, zen, and custom).
-mode2	Sub-mode or additional typing configuration.
-quoteLength	Length of the quote or text used for the session.
-restartCount	Number of times the test was restarted before successful completion.
-testDuration	Total duration of the typing test.
-afkDuration	Time spent idle (away from the keyboard) during the test.
-incompleteTestSeconds	Time spent in incomplete tests before finishing the test.
-punctuation	Indicates if punctuation was included in the typing session (true/false).
-numbers	Indicates if numbers were included in the typing session (true/false).
-language	Language of the text used in the session (English by default).
-funbox	Indicates if funbox mode was used (e.g., custom word lists).
-difficulty	Difficulty level of the typing session (normal by default).
-lazyMode	Indicates if lazy mode (relaxed typing rules) was enabled (true/false).
-blindMode	Indicates if blind mode (hidden typed text) was enabled (true/false).
-bailedOut	Indicates if the user exited the test prematurely (true/false).
-tags	Tags or labels associated with the typing session.
-timestamp	Date and time when the session occurred.
-
-
- incompleteTestSeconds
-Meaning: Time spent in unfinished attempts — tests you started but didn’t finish, before the one you actually completed.
-
-Triggers: You start typing, mess up or give up, exit the test, and start again.
-
-Use case: Captures abandoned or reset tests before a successful one.
-
-afkDuration
-You start typing a 60s test, type for 20s, then go make coffee for 30s, return and finish.
+The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.

@@ -1,11 +1,12 @@
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+import os
 
 
 def load_data(task_id, source_object, table):
     # Import env variables
-    bucket_name = "{{var.value.BUCKET_NAME}}"
-    project_id = "{{var.value.GOOGLE_CLOUD_PROJECT_ID}}"
-    dataset = "{{var.value.BIGQUERY_DATASET}}"
+    bucket_name = os.getenv("BUCKET_NAME")
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT_ID")
+    dataset = os.getenv("BIGQUERY_DATASET")
 
     # Return an operator that transfer data from bucket to BigQuery
     return GCSToBigQueryOperator(
@@ -18,4 +19,5 @@ def load_data(task_id, source_object, table):
         write_disposition="WRITE_TRUNCATE",
         autodetect=True,
         gcp_conn_id="google_cloud",
+        do_xcom_push=False,
     )

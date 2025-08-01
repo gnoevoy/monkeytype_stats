@@ -1,8 +1,9 @@
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from airflow.sdk import task, Variable
+from airflow.sdk import task
 import requests
 import logging
 import json
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -11,9 +12,9 @@ logger = logging.getLogger(__name__)
 @task
 def extract_data():
     # Get env variables
-    api_key = Variable.get("MONKEYTYPE_API_KEY")
-    base_url = Variable.get("BASE_URL")
-    bucket_name = Variable.get("BUCKET_NAME")
+    api_key = os.getenv("MONKEYTYPE_API_KEY")
+    base_url = os.getenv("BASE_URL")
+    bucket_name = os.getenv("BUCKET_NAME")
 
     # Set up the API header and endpoints
     header = {"Authorization": f"ApeKey {api_key}"}

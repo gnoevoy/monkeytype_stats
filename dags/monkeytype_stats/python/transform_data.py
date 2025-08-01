@@ -1,10 +1,11 @@
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from airflow.sdk import task, Variable
+from airflow.sdk import task
 from datetime import datetime
 from io import BytesIO
 import pandas as pd
 import logging
 import json
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def read_from_bucket(blob_name, file_type="json"):
-    bucket_name = Variable.get("BUCKET_NAME")
+    bucket_name = os.getenv("BUCKET_NAME")
     hook = GCSHook(gcp_conn_id="google_cloud")
     data = hook.download(bucket_name=bucket_name, object_name=blob_name)
 
@@ -30,7 +31,7 @@ def read_from_bucket(blob_name, file_type="json"):
 
 
 def write_to_bucket(data, blob_name):
-    bucket_name = Variable.get("BUCKET_NAME")
+    bucket_name = os.getenv("BUCKET_NAME")
     hook = GCSHook(gcp_conn_id="google_cloud")
     hook.upload(bucket_name=bucket_name, object_name=blob_name, data=data, mime_type="text/csv")
     logger.info(f"File {blob_name} - successfully uploaded to GCS bucket")

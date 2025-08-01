@@ -1,14 +1,14 @@
-# Python
+.git
+.env
+.DS_Store
+airflow_settings.yaml
 __pycache__/
-example.py
-venv/
+astro
+.venv
+airflow-webserver.pid
+webserver_config.py
+airflow.cfg
+airflow.db
 
-# dbt
-dbt_code/target/
-dbt_code/logs/
-
-# Airflow
-logs/
-
-# Env variables & secrets
-*.json
+venv
+gcloud_key.json

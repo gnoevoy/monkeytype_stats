@@ -1,11 +1,5 @@
-FROM apache/airflow:3.0.3
-ADD requirements.txt .
-RUN pip install apache-airflow==${AIRFLOW_VERSION} -r requirements.txt
+FROM astrocrpublic.azurecr.io/runtime:3.0-6
 
-# Create separate venv for dbt 
-RUN python -m venv /opt/airflow/dbt_venv && \
-    source /opt/airflow/dbt_venv/bin/activate && \
+# Venv for dbt
+RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
     pip install --no-cache-dir dbt-bigquery && deactivate
-
-
-
