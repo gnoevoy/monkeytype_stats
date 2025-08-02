@@ -15,7 +15,7 @@ from python.load_data import load_data
 from dbt.dbt_script import dbt_group
 
 
-@dag(schedule=None, start_date=pendulum.datetime(2025, 1, 1, tz="UTC"), catchup=False)
+@dag(schedule="@weekly", start_date=pendulum.datetime(2025, 1, 1, tz="UTC"), catchup=False)
 def monkeytype_pipeline():
 
     @task_group(group_id="python_group")
@@ -65,7 +65,7 @@ def monkeytype_pipeline():
     t_empty_task = empty_task()
     g_dbt = dbt_group(group_id="dbt_group")
 
-    # Chain the task groups together
+    # Chain scripts together
     g_python >> t_empty_task >> g_dbt
 
 
