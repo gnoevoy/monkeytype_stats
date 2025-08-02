@@ -1,3 +1,6 @@
+# Run dbt locally, outside of Airflow
+# Requires import 2 variables and establish connection to BigQuery (gcloud cli)
+
 monkeytype:
   outputs:
     local:

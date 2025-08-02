@@ -4,7 +4,7 @@ import pendulum
 import sys
 import os
 
-# Add path to import scripts / tasks
+# Add path to import scripts
 HOME_DIR = os.getenv("AIRFLOW_HOME")
 sys.path.append(f"{HOME_DIR}/dags")
 
@@ -18,9 +18,11 @@ from dbt.dbt_script import dbt_group
 @dag(schedule="@weekly", start_date=pendulum.datetime(2025, 1, 1, tz="UTC"), catchup=False)
 def monkeytype_pipeline():
 
+    # Python section
     @task_group(group_id="python_group")
     def python_group():
 
+        # Get fresh stats from the API
         @task_group(group_id="api_group")
         def api_group():
             t_extract_data = extract_data()
@@ -42,11 +44,13 @@ def monkeytype_pipeline():
             # Return the last tasks in the group
             return [t_load_activity_data, t_load_best_results_data, t_load_stats_data]
 
+        # Get records from manually updated file
         @task_group(group_id="file_group", prefix_group_id=False)
         def file_group():
-            # Run scripts if a file was updated otherwise skip tasks
             t_check_file_update = check_file_update()
             t_is_file_updated = is_file_updated(t_check_file_update)
+
+            # Data will be processed if the file was updated (comparison between current file timastamp in the bucket and variable)
             t_transform_results_data = transform_results_data()
             t_load_results_data = load_data("load_results_data", "clean/results.csv", "results")
             t_update_env_variable = update_env_variable(t_check_file_update)
@@ -57,6 +61,7 @@ def monkeytype_pipeline():
         g_api_group = api_group()
         g_file_group = file_group()
 
+    # Empty task to chain python and dbt groups
     @task(trigger_rule="none_failed")
     def empty_task():
         print("")

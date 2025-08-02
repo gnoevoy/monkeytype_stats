@@ -6,3 +6,7 @@ logs/
 .venv
 airflow.db
 airflow.cfg
+target/
+__pycache__/
+*.md
+images/

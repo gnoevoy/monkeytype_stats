@@ -40,8 +40,10 @@ def is_file_updated(dct):
 
 @task
 def update_env_variable(dct):
+    # Retrieve variable from airflow
     current_env_var_value = Variable.get("RESULTS_FILE_LAST_UPDATE")
     new_value = dct["file_timestamp"].isoformat()
+
     logger.info(f"Old value: {current_env_var_value}")
     logger.info(f"New value: {new_value}")
     Variable.set("RESULTS_FILE_LAST_UPDATE", new_value)
