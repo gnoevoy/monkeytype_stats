@@ -24,18 +24,11 @@
 - Used groups with the `@task_group` decorator to separate logic  
 - Configured `connections` in the Astronomer UI to authenticate with Google Cloud  
 - Used `.env` file locally and environment variables in the cloud via Astronomer UI  
-- Leveraged Google Cloud `hooks` and `operators` to:
-   - Read and write data to a Google Cloud Storage bucket  
-   - Transfer data between the bucket and BigQuery  
+- Leveraged Google Cloud `hooks` and `operators` to read/write data to Cloud Storage and transfer it to BigQuery 
 - Used `requests` and `pandas` to retrieve and transform data  
-- Applied conditional logic with:
-   - Task skipping if the file in the bucket has not changed  
-   - Update values by passing variables between tasks using `XComs`  
-   ![Conditional Logic](images/file_group.jpg)
+- Applied conditional logic to skip tasks and pass values via `XComs`
 - Added an `EmptyOperator` to connect Python and dbt groups in the DAG chain  
-- Integrated `dbt` using the `Cosmos` module to:
-   - Display dbt project structure in the Airflow UI  
-   - Run models as part of the DAG   
+- Integrated `dbt` via `Cosmos` module to visualize the project and run models in the DAG
 
 
 <br>
